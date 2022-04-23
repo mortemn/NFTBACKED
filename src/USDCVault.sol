@@ -55,20 +55,20 @@ contract USDCVault is ERC4626, Auth {
       totalSupply = type(uint256).max;
   }
 
-  function totalAssets() public view override returns (uint256 totalFunds) {
+  function totalAssets() public view override returns (uint256) {
     return (totalFunds);
   }
 
-  function afterDeposit(uint256 assets, uint256 shares) internal virtual overrides {
+  function afterDeposit(uint256 assets, uint256 shares) internal virtual override {
 
     getShares[msg.sender] += shares;
 
     getTotalDeposits[msg.sender] += assets;
 
-    totalFunds == assets;
+    totalFunds += assets;
   }
 
-  function beforeWithdraw(uint256 assets, uint256 shares) internal virtual overrides {
+  function beforeWithdraw(uint256 assets, uint256 shares) internal virtual override {
     getShares[msg.sender] -= shares;
 
     getTotalDeposits[msg.sender] -= assets;

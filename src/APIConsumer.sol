@@ -81,6 +81,10 @@ contract APIConsumer is ChainlinkClient {
         floorPrice = _floorPrice;
     }
 
+    function getFloorPrice() public view returns(uint256) {
+      return floorPrice;
+    }
+
     // function withdrawLink() external {} - Implement a withdraw function to avoid locking your LINK in the contract
 }
 
