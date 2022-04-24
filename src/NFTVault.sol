@@ -67,9 +67,9 @@ contract NFTVault is ERC20, Auth {
 
     ORACLE = _ORACLE;
     //Set liquidation price to be 30% of floor price.
-    liquidationPrice = ORACLE.floorPrice().mulDivDown(3, 100);
+    liquidationPrice = ORACLE.floorPrice().mulDivDown(3, 10000);
     //Set loan to value to be 10% of floor price.
-    loanToValue = ORACLE.floorPrice().mulDivDown(1, 100);
+    loanToValue = ORACLE.floorPrice().mulDivDown(1, 10000);
   }
 
   /*///////////////////////////////////////////////////////////////
@@ -103,7 +103,7 @@ contract NFTVault is ERC20, Auth {
 
     getLoanData[id].liquidationTime = block.timestamp + timeBeforeLiquidation;
     getLoanData[id].repayAmount = loanValue * (1 + interest);
-    getLoanData[id].liquidationPrice = ORACLE.floorPrice();
+    getLoanData[id].liquidationPrice = ORACLE.floorPrice().mulDivDown(1, 100);
   }
   
   function unlock(ERC721 token, uint256 id) external payable {
@@ -118,7 +118,7 @@ contract NFTVault is ERC20, Auth {
 
   function liquidate(ERC721 token, uint256 id) external {
 
-    require(block.timestamp > getLoanData[id].liquidationTime || ORACLE.floorPrice() < getLoanData[id].liquidationPrice, "LIQUIDATION_PROHIBITED");
+    require(block.timestamp > getLoanData[id].liquidationTime || ORACLE.floorPrice().mulDivDown(1,100) < getLoanData[id].liquidationPrice, "LIQUIDATION_PROHIBITED");
 
     //TODO: Transfer to auction.
   }
