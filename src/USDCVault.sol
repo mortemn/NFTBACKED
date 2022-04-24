@@ -32,6 +32,7 @@ contract USDCVault is ERC4626, Auth {
 
   mapping(address => uint256) private getShares; 
   mapping(address => uint256) private getTotalDeposits;
+  address[] public authorisedContracts;
 
   uint256 public totalFunds;
 
@@ -76,18 +77,40 @@ contract USDCVault is ERC4626, Auth {
     totalFunds -= assets;
   }
 
-  function useFunds(uint256 funds) external requiresAuth {
+  function useFunds(uint256 funds) external {
+    require(checkAuthorisation(msg.sender), "NOT_AUTHORISED");  
 
     UNDERLYING.safeTransferFrom(address(this), msg.sender, funds);
     totalFunds -= funds;
     
   }
 
-  function returnFunds(uint256 funds) external requiresAuth {
+  function returnFunds(uint256 funds) external {
+    require(checkAuthorisation(msg.sender), "NOT_AUTHORISED");  
     
     UNDERLYING.safeTransferFrom(address(this), msg.sender, funds);
     totalFunds += funds;
 
   }
-    
+
+  function authoriseContract(address target) external requiresAuth {
+    authorisedContracts.push(target);
+  }
+
+  function checkAuthorisation(address target) public view returns(bool) {
+    for (uint256 i = 0; i < authorisedContracts.length; i++) {
+      if (authorisedContracts[i] == target) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  function viewShares() public view returns(uint256) {
+    return getShares[msg.sender];
+  }
+
+  function viewDeposits() public view returns(uint256) {
+    return getTotalDeposits[msg.sender];
+  }
 }
